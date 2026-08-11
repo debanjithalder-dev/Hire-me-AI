@@ -21,7 +21,7 @@ export default function App() {
 
   // Background ping on site open to wake up Render free tier early
   useEffect(() => {
-    fetch('https://hireme-ai-backend-29l0.onrender.com/')
+    fetch('https://hire-me-ai-backend-paxe.onrender.com')
       .catch((err) => console.log('Warming backend...'));
   }, []);
 
@@ -121,7 +121,7 @@ export default function App() {
     }
 
     try {
-      const response = await fetch('https://hireme-ai-backend-29l0.onrender.com/chat', {
+      const response = await fetch('https://hire-me-ai-backend-paxe.onrender.com/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages: historyPayload }),
