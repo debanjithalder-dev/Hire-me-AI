@@ -1,12 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { 
   Menu, Plus, MessageSquare, Compass, Lightbulb, Code, 
-  Send, User, Sparkles, Mic, Image, Trash2
+  Send, User, Sparkles, Mic, Image, Trash2, X
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 
 export default function App() {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  // Mobile check for responsive initial sidebar state
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   
   // State for session tracking
   const [sessions, setSessions] = useState([]);
@@ -18,6 +19,13 @@ export default function App() {
   
   const chatEndRef = useRef(null);
   const abortControllerRef = useRef(null);
+
+  // Set desktop sidebar open by default on larger screens
+  useEffect(() => {
+    if (window.innerWidth >= 768) {
+      setSidebarOpen(true);
+    }
+  }, []);
 
   // Background ping on site open to wake up Render free tier early
   useEffect(() => {
@@ -62,6 +70,7 @@ export default function App() {
     setMessages([]);
     setCurrentSessionId(null);
     setLoading(false);
+    if (window.innerWidth < 768) setSidebarOpen(false);
   };
 
   const handleSelectSession = (session) => {
@@ -72,6 +81,7 @@ export default function App() {
     setCurrentSessionId(session.id);
     setMessages(session.messages);
     setLoading(false);
+    if (window.innerWidth < 768) setSidebarOpen(false);
   };
 
   const handleDeleteSession = (e, sessionId) => {
@@ -140,7 +150,6 @@ export default function App() {
       let buffer = '';
       let isStreamingDone = false;
 
-      // Background stream reader populates buffer as tokens arrive from Render
       const readStream = async () => {
         while (true) {
           if (controller.signal.aborted) break;
@@ -155,7 +164,7 @@ export default function App() {
 
       readStream();
 
-      // Smooth 28ms Interval Timer to render characters onto screen
+      // Smooth 28ms Interval Timer
       await new Promise((resolve) => {
         const interval = setInterval(() => {
           if (controller.signal.aborted) {
@@ -190,7 +199,7 @@ export default function App() {
             clearInterval(interval);
             resolve();
           }
-        }, 28); // 28ms typewriter speed
+        }, 28);
       });
 
     } catch (error) {
@@ -208,21 +217,43 @@ export default function App() {
   };
 
   return (
-    <div className="relative flex h-screen w-screen overflow-hidden bg-[#0e0f12] text-[#e3e3e3] font-sans antialiased">
+    <div className="relative flex h-[100dvh] w-screen overflow-hidden bg-[#0e0f12] text-[#e3e3e3] font-sans antialiased">
       
       {/* Background Glows */}
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[450px] bg-gradient-to-tr from-blue-900/30 via-indigo-900/20 to-purple-900/15 rounded-full blur-[140px] pointer-events-none animate-glow-slow" />
-      <div className="absolute top-1/2 left-1/3 w-[400px] h-[300px] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[320px] sm:w-[650px] h-[300px] sm:h-[450px] bg-gradient-to-tr from-blue-900/30 via-indigo-900/20 to-purple-900/15 rounded-full blur-[100px] sm:blur-[140px] pointer-events-none" />
 
-      {/* Sidebar */}
-      <div className={`${sidebarOpen ? 'w-64' : 'w-16'} transition-all duration-300 bg-[#16171a]/80 backdrop-blur-xl flex flex-col justify-between p-3 border-r border-[#27282d]/60 z-20`}>
+      {/* Mobile Dark Backdrop Overlay */}
+      {sidebarOpen && (
+        <div 
+          onClick={() => setSidebarOpen(false)}
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 md:hidden"
+        />
+      )}
+
+      {/* Responsive Sidebar */}
+      <aside 
+        className={`fixed md:relative top-0 bottom-0 left-0 z-40 bg-[#16171a] md:bg-[#16171a]/80 backdrop-blur-xl flex flex-col justify-between p-3 border-r border-[#27282d]/60 transition-all duration-300 ${
+          sidebarOpen ? 'translate-x-0 w-72 md:w-64' : '-translate-x-full md:translate-x-0 md:w-16'
+        }`}
+      >
         <div className="flex flex-col h-full overflow-hidden">
-          <button 
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-2.5 hover:bg-[#22242a] rounded-full transition-colors text-gray-400 hover:text-white w-max"
-          >
-            <Menu size={20} />
-          </button>
+          <div className="flex items-center justify-between">
+            <button 
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="p-2.5 hover:bg-[#22242a] rounded-full transition-colors text-gray-400 hover:text-white"
+              aria-label="Toggle Menu"
+            >
+              <Menu size={20} />
+            </button>
+            {sidebarOpen && (
+              <button 
+                onClick={() => setSidebarOpen(false)} 
+                className="p-2 text-gray-400 hover:text-white md:hidden"
+              >
+                <X size={20} />
+              </button>
+            )}
+          </div>
 
           <button 
             onClick={handleNewChat}
@@ -234,7 +265,7 @@ export default function App() {
 
           {/* Recent Sessions */}
           {sidebarOpen && (
-            <div className="mt-8 flex-1 overflow-y-auto pr-1">
+            <div className="mt-6 flex-1 overflow-y-auto pr-1">
               <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400 px-3 mb-2">Recent</p>
               
               {sessions.length === 0 ? (
@@ -257,7 +288,7 @@ export default function App() {
                       </div>
                       <button
                         onClick={(e) => handleDeleteSession(e, session.id)}
-                        className="opacity-0 group-hover:opacity-100 p-1 hover:text-red-400 text-gray-400 transition-opacity"
+                        className="p-1 hover:text-red-400 text-gray-400 transition-opacity"
                         title="Delete chat"
                       >
                         <Trash2 size={13} />
@@ -269,44 +300,50 @@ export default function App() {
             </div>
           )}
         </div>
-      </div>
+      </aside>
 
       {/* Main Container */}
-      <div className="flex-1 flex flex-col justify-between relative h-full max-w-4xl mx-auto px-4 sm:px-6 z-10">
+      <main className="flex-1 flex flex-col justify-between relative h-full w-full max-w-4xl mx-auto px-3 sm:px-6 z-10 overflow-hidden">
         
         {/* Header */}
-        <header className="flex justify-between items-center py-4">
-          <div className="flex items-center gap-2">
-            <span className="text-lg font-medium tracking-tight text-gray-200">HireMe AI</span>
+        <header className="flex justify-between items-center py-3 sm:py-4 shrink-0">
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => setSidebarOpen(true)}
+              className="p-2 bg-[#16171a] rounded-lg text-gray-300 md:hidden border border-[#27282d]"
+            >
+              <Menu size={18} />
+            </button>
+            <span className="text-base sm:text-lg font-medium tracking-tight text-gray-200">HireMe AI</span>
           </div>
         </header>
 
         {/* Dynamic Workspace */}
         {messages.length === 0 ? (
-          <div className="flex-1 flex flex-col justify-center my-auto py-8">
-            <div className="mb-10 text-center">
-              <h1 className="text-4xl sm:text-5xl font-medium tracking-tight bg-gradient-to-r from-[#7ea2ff] via-[#c084fc] to-[#f87171] bg-clip-text text-transparent mb-3">
+          <div className="flex-1 flex flex-col justify-center my-auto py-4 overflow-y-auto">
+            <div className="mb-6 sm:mb-10 text-center px-2">
+              <h1 className="text-2xl sm:text-4xl md:text-5xl font-medium tracking-tight bg-gradient-to-r from-[#7ea2ff] via-[#c084fc] to-[#f87171] bg-clip-text text-transparent mb-2 sm:mb-3">
                 Hi Recruiter, what's the plan?
               </h1>
-              <p className="text-lg text-gray-400 font-light">
+              <p className="text-sm sm:text-base text-gray-400 font-light">
                 Ask anything about Debanjit's experience, code, or projects.
               </p>
             </div>
 
             {/* Prompt Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3.5 max-h-[45vh] sm:max-h-none overflow-y-auto px-1">
               {starterCards.map((card, idx) => (
                 <div 
                   key={idx}
                   onClick={() => handleSend(card.query)}
-                  className="group bg-[#16171a]/70 backdrop-blur-md hover:bg-[#202227] p-4 rounded-2xl cursor-pointer flex flex-col justify-between h-36 border border-[#27282d] hover:border-[#3a3d46] transition-all duration-200 shadow-lg"
+                  className="group bg-[#16171a]/70 backdrop-blur-md hover:bg-[#202227] p-3.5 sm:p-4 rounded-xl sm:rounded-2xl cursor-pointer flex flex-col justify-between min-h-[90px] sm:h-36 border border-[#27282d] hover:border-[#3a3d46] transition-all duration-200 shadow-md active:scale-[0.98]"
                 >
                   <div>
-                    <p className="text-sm font-medium text-gray-200 group-hover:text-blue-400 transition-colors mb-1">{card.label}</p>
-                    <p className="text-xs text-gray-400 leading-relaxed line-clamp-2">{card.desc}</p>
+                    <p className="text-xs sm:text-sm font-medium text-gray-200 group-hover:text-blue-400 transition-colors mb-0.5 sm:mb-1">{card.label}</p>
+                    <p className="text-[11px] sm:text-xs text-gray-400 leading-relaxed line-clamp-2">{card.desc}</p>
                   </div>
-                  <div className="self-end p-2 bg-[#0e0f12] rounded-full text-gray-400 group-hover:text-white transition-all">
-                    <card.icon size={15} />
+                  <div className="self-end p-1.5 sm:p-2 bg-[#0e0f12] rounded-full text-gray-400 group-hover:text-white transition-all mt-2">
+                    <card.icon size={14} />
                   </div>
                 </div>
               ))}
@@ -314,20 +351,20 @@ export default function App() {
           </div>
         ) : (
           /* Chat Stream */
-          <div className="flex-1 overflow-y-auto space-y-6 my-4 pr-2 scrollbar-thin scrollbar-thumb-[#282a2c]">
+          <div className="flex-1 overflow-y-auto space-y-4 sm:space-y-6 my-2 sm:my-4 pr-1 scrollbar-thin scrollbar-thumb-[#282a2c]">
             {messages.map((msg, index) => (
-              <div key={index} className={`flex gap-4 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+              <div key={index} className={`flex gap-2 sm:gap-4 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
                 {msg.sender === 'bot' && (
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shrink-0 mt-1 shadow-md">
-                    <Sparkles size={16} />
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shrink-0 mt-1 shadow-md">
+                    <Sparkles size={14} />
                   </div>
                 )}
-                <div className={`p-4 rounded-2xl max-w-[85%] ${
+                <div className={`p-3 sm:p-4 rounded-2xl max-w-[90%] sm:max-w-[85%] ${
                   msg.sender === 'user' 
                     ? 'bg-[#22242a] text-white rounded-tr-sm border border-[#32353e]' 
                     : 'bg-transparent text-gray-200'
                 }`}>
-                  <div className="whitespace-pre-wrap text-sm leading-relaxed prose prose-invert max-w-none">
+                  <div className="whitespace-pre-wrap text-xs sm:text-sm leading-relaxed prose prose-invert max-w-none">
                     <ReactMarkdown
                       components={{
                         a: ({ node, ...props }) => (
@@ -335,7 +372,7 @@ export default function App() {
                             {...props}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-blue-400 no-underline hover:underline font-medium transition-all"
+                            className="text-blue-400 no-underline hover:underline font-medium transition-all break-all"
                           />
                         ),
                         ul: ({ node, ...props }) => (
@@ -343,7 +380,7 @@ export default function App() {
                         ),
                         ol: ({ node, ...props }) => (
                           <ol {...props} className="list-decimal list-inside my-2 space-y-1 text-gray-200" />
-                    ),
+                        ),
                         li: ({ node, children, ...props }) => {
                           const textContent = node?.children?.[0]?.children?.[0]?.value || node?.children?.[0]?.value;
                           const isSuggestion = typeof textContent === 'string' && textContent.endsWith('?');
@@ -369,16 +406,16 @@ export default function App() {
                   </div>
                 </div>
                 {msg.sender === 'user' && (
-                  <div className="w-8 h-8 rounded-full bg-[#22242a] border border-[#32353e] flex items-center justify-center text-gray-300 shrink-0 mt-1">
-                    <User size={16} />
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#22242a] border border-[#32353e] flex items-center justify-center text-gray-300 shrink-0 mt-1">
+                    <User size={14} />
                   </div>
                 )}
               </div>
             ))}
             {loading && (
-              <div className="flex gap-4 items-center text-gray-400 text-sm py-2">
-                <div className="w-8 h-8 rounded-full bg-blue-600/20 flex items-center justify-center text-blue-400 shrink-0">
-                  <Sparkles size={16} className="animate-spin" />
+              <div className="flex gap-3 items-center text-gray-400 text-xs sm:text-sm py-2">
+                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-blue-600/20 flex items-center justify-center text-blue-400 shrink-0">
+                  <Sparkles size={14} className="animate-spin" />
                 </div>
                 <span className="animate-pulse">Thinking...</span>
               </div>
@@ -388,40 +425,40 @@ export default function App() {
         )}
 
         {/* Floating Input Pill Bar */}
-        <div className="pb-6 pt-2">
+        <div className="pb-3 sm:pb-6 pt-2 shrink-0">
           <form 
             onSubmit={(e) => {
               e.preventDefault();
               handleSend();
             }}
-            className="bg-[#1e2025]/90 backdrop-blur-xl rounded-full flex items-center px-4 py-2 border border-[#32353e] focus-within:border-gray-400 transition-all shadow-2xl"
+            className="bg-[#1e2025]/90 backdrop-blur-xl rounded-full flex items-center px-3 sm:px-4 py-1.5 sm:py-2 border border-[#32353e] focus-within:border-gray-400 transition-all shadow-2xl"
           >
             <input 
               type="text"
               placeholder="Ask HireMe AI..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              className="bg-transparent flex-1 text-gray-200 placeholder-gray-500 outline-none text-sm px-2 py-1.5"
+              className="bg-transparent flex-1 text-gray-200 placeholder-gray-500 outline-none text-xs sm:text-sm px-2 py-1"
             />
-            <div className="flex items-center gap-1.5 text-gray-400">
-              <button type="button" className="p-2 hover:text-white rounded-full hover:bg-[#282b32] transition-colors"><Image size={18} /></button>
-              <button type="button" className="p-2 hover:text-white rounded-full hover:bg-[#282b32] transition-colors"><Mic size={18} /></button>
+            <div className="flex items-center gap-1 sm:gap-1.5 text-gray-400 shrink-0">
+              <button type="button" className="p-1.5 hover:text-white rounded-full hover:bg-[#282b32] transition-colors"><Image size={16} /></button>
+              <button type="button" className="p-1.5 hover:text-white rounded-full hover:bg-[#282b32] transition-colors"><Mic size={16} /></button>
               {input.trim() && (
                 <button 
                   type="submit"
-                  className="p-2 bg-white text-black rounded-full hover:bg-gray-200 transition-all transform active:scale-95"
+                  className="p-1.5 sm:p-2 bg-white text-black rounded-full hover:bg-gray-200 transition-all transform active:scale-95"
                 >
-                  <Send size={15} />
+                  <Send size={13} />
                 </button>
               )}
             </div>
           </form>
-          <p className="text-[11px] text-center text-gray-500 mt-2 font-light">
+          <p className="text-[10px] sm:text-[11px] text-center text-gray-500 mt-1.5 sm:mt-2 font-light">
             HireMe AI displays information regarding Debanjit's skills, education, and projects.
           </p>
         </div>
 
-      </div>
+      </main>
     </div>
   );
 }
