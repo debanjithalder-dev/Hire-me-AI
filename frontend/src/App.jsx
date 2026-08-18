@@ -267,30 +267,53 @@ export default function App() {
             )}
           </div>
 
-          {/* Profile Card Section */}
+          {/* Modern Profile Card Section */}
           {sidebarOpen ? (
-            <div className="flex flex-col items-center text-center p-3.5 bg-[#1c1e24]/70 border border-[#2b2e38] rounded-2xl mb-4 shrink-0 transition-all shadow-lg">
-              <div className="relative mb-2.5">
-                <img 
-                  src={profilePic} 
-                  alt="Debanjit Halder" 
-                  className="w-16 h-16 rounded-full object-cover object-top border-2 border-blue-500/80 shadow-md shadow-blue-500/10"
-                />
-              </div>
-              <h2 className="text-sm font-semibold text-white tracking-tight">Debanjit Halder</h2>
-              <span className="text-[11px] font-medium text-blue-400 mt-0.5">AI Engineer</span>
+            <div className="relative flex flex-col items-center text-center p-4 bg-gradient-to-b from-[#1e222d]/80 to-[#13151b]/80 border border-white/[0.08] backdrop-blur-xl rounded-2xl mb-4 shrink-0 transition-all shadow-xl hover:border-white/[0.14] group">
               
-              <p className="text-[10px] text-gray-400 mt-1.5 leading-tight font-light px-1">
-                Python • GenAI • RAG • LLMs • C++ 
-              </p>
+              {/* Avatar with Live Status Dot */}
+              <div className="relative mb-3">
+                <div className="w-16 h-16 rounded-full p-[2px] bg-gradient-to-tr from-blue-500 via-indigo-500 to-purple-500 shadow-md shadow-blue-500/20">
+                  <img 
+                    src={profilePic} 
+                    alt="Debanjit Halder" 
+                    className="w-full h-full rounded-full object-cover object-top bg-[#16171a]"
+                  />
+                </div>
+                {/* Active "Open to Work" Badge */}
+                <span className="absolute bottom-0 right-0 flex h-3.5 w-3.5 items-center justify-center">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500 border-2 border-[#13151b]"></span>
+                </span>
+              </div>
 
-              {/* Social / Profile Links */}
-              <div className="flex items-center justify-center gap-2.5 mt-3 pt-2.5 border-t border-[#2d303b] w-full">
+              {/* Name & Role */}
+              <h2 className="text-sm font-semibold text-white tracking-tight">Debanjit Halder</h2>
+              <div className="mt-1 px-2.5 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/20">
+                <span className="text-[11px] font-medium bg-gradient-to-r from-blue-400 to-indigo-300 bg-clip-text text-transparent">
+                  AI Engineer
+                </span>
+              </div>
+
+              {/* Modern Micro Skill Pills */}
+              <div className="flex flex-wrap justify-center gap-1.5 mt-3 px-1">
+                {['GenAI', 'LLMs', 'FastAPI', 'Python', 'C++'].map((skill) => (
+                  <span 
+                    key={skill}
+                    className="px-2 py-0.5 text-[10px] font-medium text-gray-300 bg-[#252833]/70 hover:bg-[#2f3340] border border-white/[0.06] rounded-md transition-colors"
+                  >
+                    {skill}
+                  </span>
+                ))}
+              </div>
+
+              {/* Glowing Social & Resume Links */}
+              <div className="grid grid-cols-3 gap-2 mt-3.5 pt-3 border-t border-white/[0.08] w-full">
                 <a 
                   href="https://hire-me-ai-backend-paxe.onrender.com/static/Resume_Debanjit(2)(1).pdf" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="p-1.5 bg-red-500/15 hover:bg-red-500/30 text-red-400 rounded-lg transition-all"
+                  className="flex items-center justify-center py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95"
                   title="View Resume PDF"
                 >
                   <FileText size={15} />
@@ -299,7 +322,7 @@ export default function App() {
                   href="https://github.com/debanjithalder-dev" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="p-1.5 bg-[#252830] hover:bg-[#323642] text-gray-300 hover:text-white rounded-lg transition-all"
+                  className="flex items-center justify-center py-2 bg-[#252934] hover:bg-[#323746] border border-white/[0.08] text-gray-200 hover:text-white rounded-xl transition-all duration-200 hover:scale-105 active:scale-95"
                   title="GitHub Profile"
                 >
                   <GithubIcon size={15} />
@@ -308,20 +331,23 @@ export default function App() {
                   href="https://www.linkedin.com/in/debanjit-halder/" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="p-1.5 bg-blue-600/15 hover:bg-blue-600/30 text-blue-400 rounded-lg transition-all"
+                  className="flex items-center justify-center py-2 bg-blue-600/10 hover:bg-blue-600/20 border border-blue-500/20 text-blue-400 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95"
                   title="LinkedIn Profile"
                 >
                   <LinkedinIcon size={15} />
                 </a>
               </div>
+
             </div>
           ) : (
             <div className="flex flex-col items-center gap-3 mb-4 shrink-0">
-              <img 
-                src={profilePic} 
-                alt="Debanjit Halder" 
-                className="w-8 h-8 rounded-full object-cover object-top border border-blue-500"
-              />
+              <div className="w-8 h-8 rounded-full p-[1.5px] bg-gradient-to-tr from-blue-500 to-indigo-500">
+                <img 
+                  src={profilePic} 
+                  alt="Debanjit Halder" 
+                  className="w-full h-full rounded-full object-cover object-top"
+                />
+              </div>
             </div>
           )}
 
