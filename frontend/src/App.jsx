@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { 
-  Menu, Plus, MessageSquare, Compass, Lightbulb, Code, 
+  Menu, Plus, Compass, Lightbulb, Code, 
   Send, User, Sparkles, Mic, Image, Trash2, X, FileText
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
@@ -19,6 +19,22 @@ const LinkedinIcon = ({ size = 15 }) => (
     <rect x="2" y="9" width="4" height="12"></rect>
     <circle cx="4" cy="4" r="2"></circle>
   </svg>
+);
+
+// Designer AI Chat Thread Icon
+const ModernChatIcon = ({ size = 14, active = false }) => (
+  <div className={`relative flex items-center justify-center shrink-0 w-6 h-6 rounded-lg transition-all ${
+    active 
+      ? 'bg-gradient-to-tr from-blue-500/25 to-indigo-500/25 text-blue-400 border border-blue-500/40 shadow-sm shadow-blue-500/20' 
+      : 'bg-white/[0.04] group-hover:bg-white/[0.08] text-gray-400 group-hover:text-gray-200 border border-white/[0.06]'
+  }`}>
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22z" />
+      <circle cx="8" cy="12" r="1" fill="currentColor" />
+      <circle cx="12" cy="12" r="1" fill="currentColor" />
+      <circle cx="16" cy="12" r="1" fill="currentColor" />
+    </svg>
+  </div>
 );
 
 export default function App() {
@@ -373,19 +389,19 @@ export default function App() {
                     <div
                       key={session.id}
                       onClick={() => handleSelectSession(session)}
-                      className={`group flex items-center justify-between px-3 py-2 text-sm rounded-xl cursor-pointer transition-colors ${
+                      className={`group flex items-center justify-between px-2.5 py-2 text-sm rounded-xl cursor-pointer transition-all ${
                         currentSessionId === session.id
-                          ? 'bg-[#282b32] text-white font-medium'
-                          : 'text-gray-300 hover:bg-[#22242a]'
+                          ? 'bg-gradient-to-r from-[#242731] to-[#1c1e26] text-white font-medium border border-white/[0.08] shadow-sm'
+                          : 'text-gray-400 hover:text-gray-200 hover:bg-white/[0.03]'
                       }`}
                     >
-                      <div className="flex items-center gap-3 truncate">
-                        <MessageSquare size={15} className="text-gray-400 shrink-0" />
-                        <span className="truncate text-xs">{session.title}</span>
+                      <div className="flex items-center gap-2.5 truncate">
+                        <ModernChatIcon size={13} active={currentSessionId === session.id} />
+                        <span className="truncate text-xs tracking-tight">{session.title}</span>
                       </div>
                       <button
                         onClick={(e) => handleDeleteSession(e, session.id)}
-                        className="p-1 hover:text-red-400 text-gray-400 transition-opacity"
+                        className="opacity-0 group-hover:opacity-100 p-1 hover:text-red-400 text-gray-400 transition-opacity"
                         title="Delete chat"
                       >
                         <Trash2 size={13} />
