@@ -4,6 +4,7 @@ import {
   Send, User, Sparkles, Mic, Image, Trash2, X, FileText
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import profilePic from './assets/profile.jpg';
 
 // Custom inline SVG icons for GitHub & LinkedIn
 const GithubIcon = ({ size = 15 }) => (
@@ -271,7 +272,7 @@ export default function App() {
             <div className="flex flex-col items-center text-center p-3.5 bg-[#1c1e24]/70 border border-[#2b2e38] rounded-2xl mb-4 shrink-0 transition-all shadow-lg">
               <div className="relative mb-2.5">
                 <img 
-                  src="/profile.jpg" 
+                  src={profilePic} 
                   alt="Debanjit Halder" 
                   className="w-16 h-16 rounded-full object-cover object-top border-2 border-blue-500/80 shadow-md shadow-blue-500/10"
                 />
@@ -317,7 +318,7 @@ export default function App() {
           ) : (
             <div className="flex flex-col items-center gap-3 mb-4 shrink-0">
               <img 
-                src="/profile.jpg" 
+                src={profilePic} 
                 alt="Debanjit Halder" 
                 className="w-8 h-8 rounded-full object-cover object-top border border-blue-500"
               />
