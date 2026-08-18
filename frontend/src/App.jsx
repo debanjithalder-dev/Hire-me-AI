@@ -281,7 +281,7 @@ export default function App() {
               <span className="text-[11px] font-medium text-blue-400 mt-0.5">AI Engineer</span>
               
               <p className="text-[10px] text-gray-400 mt-1.5 leading-tight font-light px-1">
-                Python • GenAI • FastAPI • LLMs • C++
+                C++ • Python • GenAI • RAG • LLMs
               </p>
 
               {/* Social / Profile Links */}
