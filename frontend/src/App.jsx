@@ -313,7 +313,7 @@ export default function App() {
 
               {/* Modern Micro Skill Pills */}
               <div className="flex flex-wrap justify-center gap-1.5 mt-3 px-1">
-                {['GenAI', 'LLMs', 'FastAPI', 'Python', 'C++'].map((skill) => (
+                {['GenAI', 'LLMs', 'RAG', 'Python', 'C++'].map((skill) => (
                   <span 
                     key={skill}
                     className="px-2 py-0.5 text-[10px] font-medium text-gray-300 bg-[#252833]/70 hover:bg-[#2f3340] border border-white/[0.06] rounded-md transition-colors"
