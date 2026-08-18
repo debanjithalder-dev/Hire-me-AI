@@ -1,15 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { 
   Menu, Plus, MessageSquare, Compass, Lightbulb, Code, 
-  Send, User, Sparkles, Mic, Image, Trash2, X
+  Send, User, Sparkles, Mic, Image, Trash2, X,
+  Github, Linkedin, FileText
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 
 export default function App() {
-  // Mobile check for responsive initial sidebar state
   const [sidebarOpen, setSidebarOpen] = useState(false);
   
-  // State for session tracking
   const [sessions, setSessions] = useState([]);
   const [currentSessionId, setCurrentSessionId] = useState(null);
   
@@ -20,14 +19,12 @@ export default function App() {
   const chatEndRef = useRef(null);
   const abortControllerRef = useRef(null);
 
-  // Set desktop sidebar open by default on larger screens
   useEffect(() => {
     if (window.innerWidth >= 768) {
       setSidebarOpen(true);
     }
   }, []);
 
-  // Background ping on site open to wake up Render free tier early
   useEffect(() => {
     fetch('https://hire-me-ai-backend-paxe.onrender.com')
       .catch((err) => console.log('Warming backend...'));
@@ -232,15 +229,16 @@ export default function App() {
 
       {/* Responsive Sidebar */}
       <aside 
-        className={`fixed md:relative top-0 bottom-0 left-0 z-40 bg-[#16171a] md:bg-[#16171a]/80 backdrop-blur-xl flex flex-col justify-between p-3 border-r border-[#27282d]/60 transition-all duration-300 ${
+        className={`fixed md:relative top-0 bottom-0 left-0 z-40 bg-[#16171a] md:bg-[#16171a]/95 backdrop-blur-xl flex flex-col justify-between p-3 border-r border-[#27282d]/60 transition-all duration-300 ${
           sidebarOpen ? 'translate-x-0 w-72 md:w-64' : '-translate-x-full md:translate-x-0 md:w-16'
         }`}
       >
         <div className="flex flex-col h-full overflow-hidden">
-          <div className="flex items-center justify-between">
+          {/* Header Toggle */}
+          <div className="flex items-center justify-between shrink-0 mb-3">
             <button 
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="p-2.5 hover:bg-[#22242a] rounded-full transition-colors text-gray-400 hover:text-white"
+              className="p-2 hover:bg-[#22242a] rounded-full transition-colors text-gray-400 hover:text-white"
               aria-label="Toggle Menu"
             >
               <Menu size={20} />
@@ -255,9 +253,69 @@ export default function App() {
             )}
           </div>
 
+          {/* Profile Card Section (Visible when sidebar is open) */}
+          {sidebarOpen ? (
+            <div className="flex flex-col items-center text-center p-3.5 bg-[#1c1e24]/70 border border-[#2b2e38] rounded-2xl mb-4 shrink-0 transition-all shadow-lg">
+              <div className="relative mb-2.5">
+                <img 
+                  src="/profile.jpg" 
+                  alt="Debanjit Halder" 
+                  className="w-16 h-16 rounded-full object-cover object-top border-2 border-blue-500/80 shadow-md shadow-blue-500/10"
+                />
+              </div>
+              <h2 className="text-sm font-semibold text-white tracking-tight">Debanjit Halder</h2>
+              <span className="text-[11px] font-medium text-blue-400 mt-0.5">AI Engineer</span>
+              
+              <p className="text-[10px] text-gray-400 mt-1.5 leading-tight font-light px-1">
+                Python • GenAI • FastAPI • LLMs • C++
+              </p>
+
+              {/* Social / Profile Links */}
+              <div className="flex items-center justify-center gap-2.5 mt-3 pt-2.5 border-t border-[#2d303b] w-full">
+                <a 
+                  href="https://hire-me-ai-backend-paxe.onrender.com/static/Resume_Debanjit(2)(1).pdf" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="p-1.5 bg-red-500/15 hover:bg-red-500/30 text-red-400 rounded-lg transition-all"
+                  title="View Resume PDF"
+                >
+                  <FileText size={15} />
+                </a>
+                <a 
+                  href="https://github.com/debanjithalder-dev" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="p-1.5 bg-[#252830] hover:bg-[#323642] text-gray-300 hover:text-white rounded-lg transition-all"
+                  title="GitHub Profile"
+                >
+                  <Github size={15} />
+                </a>
+                <a 
+                  href="https://www.linkedin.com/in/debanjit-halder/" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="p-1.5 bg-blue-600/15 hover:bg-blue-600/30 text-blue-400 rounded-lg transition-all"
+                  title="LinkedIn Profile"
+                >
+                  <Linkedin size={15} />
+                </a>
+              </div>
+            </div>
+          ) : (
+            /* Minimized Profile Icon for Collapsed Sidebar */
+            <div className="flex flex-col items-center gap-3 mb-4 shrink-0">
+              <img 
+                src="/profile.jpg" 
+                alt="Debanjit Halder" 
+                className="w-8 h-8 rounded-full object-cover object-top border border-blue-500"
+              />
+            </div>
+          )}
+
+          {/* New Chat Button */}
           <button 
             onClick={handleNewChat}
-            className="mt-6 flex items-center justify-start gap-3 px-3.5 py-2.5 bg-[#1e2025] hover:bg-[#282b32] text-gray-200 rounded-full w-full border border-[#32353e] text-sm font-medium transition-all shadow-sm shrink-0"
+            className="flex items-center justify-start gap-3 px-3.5 py-2.5 bg-[#1e2025] hover:bg-[#282b32] text-gray-200 rounded-full w-full border border-[#32353e] text-sm font-medium transition-all shadow-sm shrink-0"
           >
             <Plus size={18} className="text-blue-400" />
             {sidebarOpen && <span className="truncate">New Chat</span>}
@@ -265,7 +323,7 @@ export default function App() {
 
           {/* Recent Sessions */}
           {sidebarOpen && (
-            <div className="mt-6 flex-1 overflow-y-auto pr-1">
+            <div className="mt-4 flex-1 overflow-y-auto pr-1">
               <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400 px-3 mb-2">Recent</p>
               
               {sessions.length === 0 ? (
