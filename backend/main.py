@@ -78,7 +78,7 @@ CACHED_RESUME: Resume | None = None
 def ask_candidate(chat_history: list[ChatMessage], resume: Resume):
 
     BASE_URL = os.getenv("RENDER_EXTERNAL_URL", "http://127.0.0.1:8000")
-    pdf_download_url = f"{BASE_URL}/static/Resume_Debanjit(2)(1).pdf"
+    pdf_download_url = f"{BASE_URL}/static/Resume_Debanjit(2).pdf"
 
     system_prompt = f"""
     You are an AI assistant representing a job candidate.
