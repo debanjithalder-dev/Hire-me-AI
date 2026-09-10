@@ -204,7 +204,7 @@ def home():
 def chat(request: ChatRequest):
     global CACHED_RESUME
     if not CACHED_RESUME:
-        pdf_path = Path("Resume_Debanjit(2)(1).pdf")
+        pdf_path = Path("Resume_Debanjit(2).pdf")
         if pdf_path.exists():
             CACHED_RESUME = parse_resume(read_pdf(pdf_path))
         else:
